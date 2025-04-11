@@ -1,0 +1,126 @@
+@model IEnumerable<AracServisYonetim.Models.ApplicationUser>
+@{
+    ViewBag.Title = "Personel";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Personel</h2>
+    <a href="@Url.Action("Create")" class="btn btn-primary">
+        <i class="bi bi-plus"></i> Yeni Personel Ekle
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <input type="text" id="adSoyadAra" class="form-control" placeholder="Ad soyad ara...">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group">
+                    <input type="text" id="epostaAra" class="form-control" placeholder="E-posta ara...">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select id="rolFiltre" class="form-select">
+                    <option value="Tümü">Tümü</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Teknisyen">Teknisyen</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Personel</th>
+                        <th>İletişim</th>
+                        <th>Rol</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.TamAd</td>
+                            <td>@item.Email</td>
+                            <td>
+                                <span class="badge @(item.Rol == UserRole.Admin ? "bg-danger" : "bg-info")">
+                                    @(item.Rol == UserRole.Admin ? "Admin" : "Teknisyen")
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="@Url.Action("ResetPassword", new { id = item.Id })" class="btn btn-sm btn-outline-warning">
+                                        <i class="bi bi-key"></i>
+                                    </a>
+                                    <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#adSoyadAra').on('keyup', function () {
+                filterTable();
+            });
+
+            $('#epostaAra').on('keyup', function () {
+                filterTable();
+            });
+
+            $('#rolFiltre').on('change', function () {
+                filterTable();
+            });
+
+            function filterTable() {
+                var adSoyad = $('#adSoyadAra').val().toLowerCase();
+                var eposta = $('#epostaAra').val().toLowerCase();
+                var rol = $('#rolFiltre').val();
+
+                $('tbody tr').each(function () {
+                    var adSoyadMatch = $(this).find('td:eq(0)').text().toLowerCase().indexOf(adSoyad) > -1;
+                    var epostaMatch = $(this).find('td:eq(1)').text().toLowerCase().indexOf(eposta) > -1;
+                    
+                    var rolMatch = true;
+                    if (rol !== 'Tümü') {
+                        rolMatch = $(this).find('td:eq(2)').text().trim() === rol;
+                    }
+
+                    $(this).toggle(adSoyadMatch && epostaMatch && rolMatch);
+                });
+            }
+        });
+    </script>
+}

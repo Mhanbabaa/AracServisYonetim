@@ -1,0 +1,126 @@
+@{
+    ViewBag.Title = "Kurulum Talimatları";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4 turkish-text">
+    <h2 class="mb-4">Araç Servis Yönetim Sistemi - Kurulum Talimatları</h2>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Sistem Gereksinimleri</h5>
+        </div>
+        <div class="card-body">
+            <ul>
+                <li>Windows Server 2016 veya üzeri / Linux (Ubuntu, CentOS)</li>
+                <li>.NET Framework 4.7.2 veya üzeri</li>
+                <li>IIS 10 veya üzeri / Nginx + Mono</li>
+                <li>MySQL 5.7 veya üzeri</li>
+                <li>En az 4GB RAM, 10GB disk alanı</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Kurulum Adımları</h5>
+        </div>
+        <div class="card-body">
+            <ol>
+                <li class="mb-3">
+                    <strong>Veritabanı Kurulumu</strong>
+                    <p>MySQL veritabanı sunucusunda yeni bir veritabanı oluşturun:</p>
+                    <pre class="bg-light p-3">CREATE DATABASE AracServisYonetim CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;</pre>
+                    <p>Veritabanı için bir kullanıcı oluşturun ve gerekli izinleri verin:</p>
+                    <pre class="bg-light p-3">CREATE USER 'servisuser'@@'127.0.0.1' IDENTIFIED BY 'guclu_parola';
+GRANT ALL PRIVILEGES ON AracServisYonetim.* TO 'servisuser'@@'127.0.0.1';
+FLUSH PRIVILEGES;</pre>
+                </li>
+                
+                <li class="mb-3">
+                    <strong>Uygulama Dosyalarının Kopyalanması</strong>
+                    <p>Uygulama dosyalarını web sunucusunun ilgili dizinine kopyalayın:</p>
+                    <ul>
+                        <li>IIS için: <code>C:\inetpub\wwwroot\AracServisYonetim\</code></li>
+                        <li>Nginx için: <code>/var/www/AracServisYonetim/</code></li>
+                    </ul>
+                </li>
+                
+                <li class="mb-3">
+                    <strong>Web.config Dosyasının Düzenlenmesi</strong>
+                    <p>Web.config dosyasındaki veritabanı bağlantı bilgilerini düzenleyin:</p>
+                    <pre class="bg-light p-3">&lt;connectionStrings&gt;
+    &lt;add name="DefaultConnection" 
+         connectionString="Server=127.0.0.1;Database=AracServisYonetim;Uid=servisuser;Pwd=guclu_parola;" 
+         providerName="MySql.Data.MySqlClient" /&gt;
+&lt;/connectionStrings&gt;</pre>
+                </li>
+                
+                <li class="mb-3">
+                    <strong>Web Sunucusu Yapılandırması</strong>
+                    <p>IIS için:</p>
+                    <ul>
+                        <li>IIS Yöneticisi'ni açın</li>
+                        <li>Yeni bir uygulama havuzu oluşturun (.NET CLR Version v4.0.30319)</li>
+                        <li>Yeni bir site oluşturun ve uygulama havuzuna atayın</li>
+                        <li>Fiziksel yolu uygulama dosyalarının bulunduğu dizine ayarlayın</li>
+                    </ul>
+                    
+                    <p>Nginx için:</p>
+                    <pre class="bg-light p-3">server {
+    listen 80;
+    server_name aracservis.example.com;
+    
+    location / {
+        root /var/www/AracServisYonetim;
+        fastcgi_pass 127.0.0.1:9000;
+        include /etc/nginx/fastcgi_params;
+    }
+}</pre>
+                </li>
+                
+                <li class="mb-3">
+                    <strong>İlk Çalıştırma ve Veri Oluşturma</strong>
+                    <p>Uygulamayı tarayıcıdan açın ve aşağıdaki URL'yi ziyaret edin:</p>
+                    <pre class="bg-light p-3">http://[sunucu-adresi]/Test/SeedData</pre>
+                    <p>Bu işlem, veritabanında gerekli tabloları oluşturacak ve örnek veriler ekleyecektir.</p>
+                </li>
+                
+                <li class="mb-3">
+                    <strong>Giriş Yapma</strong>
+                    <p>Aşağıdaki bilgilerle sisteme giriş yapabilirsiniz:</p>
+                    <ul>
+                        <li>E-posta: admin@example.com</li>
+                        <li>Şifre: Admin123!</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Sorun Giderme</h5>
+        </div>
+        <div class="card-body">
+            <ul>
+                <li>
+                    <strong>Veritabanı Bağlantı Hatası</strong>
+                    <p>Web.config dosyasındaki bağlantı bilgilerini kontrol edin. MySQL sunucusunun çalıştığından ve erişilebilir olduğundan emin olun.</p>
+                </li>
+                <li>
+                    <strong>500 Internal Server Error</strong>
+                    <p>IIS hata günlüklerini kontrol edin. Uygulama havuzunun doğru .NET sürümünü kullandığından emin olun.</p>
+                </li>
+                <li>
+                    <strong>Sayfa Yüklenmiyor</strong>
+                    <p>Web sunucusu yapılandırmasını kontrol edin. Uygulama dosyalarının doğru dizinde olduğundan emin olun.</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="text-center mb-4">
+        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Ana Sayfaya Dön</a>
+    </div>
+</div>

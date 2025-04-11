@@ -1,0 +1,42 @@
+@{
+    ViewBag.Title = "Veritabanı Test";
+}
+
+<h2>Veritabanı Bağlantı Testi</h2>
+
+<div class="alert @(ViewBag.DatabaseStatus.StartsWith("Hata") ? "alert-danger" : "alert-success")">
+    <strong>Durum:</strong> @ViewBag.DatabaseStatus
+</div>
+
+@if (!ViewBag.DatabaseStatus.StartsWith("Hata"))
+{
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Veritabanı İstatistikleri</h3>
+        </div>
+        <div class="panel-body">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <span class="badge">@ViewBag.MusteriSayisi</span>
+                    Müşteri Sayısı
+                </li>
+                <li class="list-group-item">
+                    <span class="badge">@ViewBag.AracSayisi</span>
+                    Araç Sayısı
+                </li>
+                <li class="list-group-item">
+                    <span class="badge">@ViewBag.ServisSayisi</span>
+                    Servis Kaydı Sayısı
+                </li>
+                <li class="list-group-item">
+                    <span class="badge">@ViewBag.KullaniciSayisi</span>
+                    Kullanıcı Sayısı
+                </li>
+            </ul>
+        </div>
+    </div>
+}
+
+<div class="well">
+    <a href="@Url.Action("SeedData")" class="btn btn-primary">Örnek Verileri Yükle</a>
+</div>

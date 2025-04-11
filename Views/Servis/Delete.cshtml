@@ -1,0 +1,77 @@
+@model AracServisYonetim.Models.Servis
+@{
+    ViewBag.Title = "Servis Kaydı Sil";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="modal-header">
+    <h2>@ViewBag.Title</h2>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<div class="modal-body">
+    <div class="alert alert-danger">
+        <h4>Bu servis kaydını silmek istediğinizden emin misiniz?</h4>
+        <p>Bu işlem geri alınamaz.</p>
+    </div>
+
+    <dl class="row">
+        <dt class="col-sm-3">Araç</dt>
+        <dd class="col-sm-9">@Model.Arac.Plaka - @Model.Arac.Marka @Model.Arac.Model</dd>
+
+        <dt class="col-sm-3">Müşteri</dt>
+        <dd class="col-sm-9">@Model.Arac.Musteri.TamAd</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Aciklama)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Aciklama)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Durum)</dt>
+        <dd class="col-sm-9">
+            @if (Model.Durum == ServisDurumu.DevamEdiyor)
+            {
+                <span class="badge bg-warning">Devam Ediyor</span>
+            }
+            else if (Model.Durum == ServisDurumu.Tamamlandi)
+            {
+                <span class="badge bg-success">Tamamlandı</span>
+            }
+            else
+            {
+                <span class="badge bg-danger">İptal Edildi</span>
+            }
+        </dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.BaslangicTarihi)</dt>
+        <dd class="col-sm-9">@Model.BaslangicTarihi.ToString("dd.MM.yyyy")</dd>
+
+        @if (Model.BitisTarihi.HasValue)
+        {
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.BitisTarihi)</dt>
+            <dd class="col-sm-9">@Model.BitisTarihi.Value.ToString("dd.MM.yyyy")</dd>
+        }
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.ToplamUcret)</dt>
+        <dd class="col-sm-9">@Model.ToplamUcret.ToString("N2")₺</dd>
+
+        <dt class="col-sm-3">Teknisyen</dt>
+        <dd class="col-sm-9">
+            @if (Model.Teknisyen != null)
+            {
+                @Model.Teknisyen.TamAd
+            }
+            else
+            {
+                <span class="text-muted">Atanmadı</span>
+            }
+        </dd>
+    </dl>
+</div>
+
+<div class="modal-footer">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+        <button type="submit" class="btn btn-danger">Sil</button>
+    }
+</div>

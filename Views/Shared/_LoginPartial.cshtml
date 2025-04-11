@@ -1,0 +1,27 @@
+@using Microsoft.AspNet.Identity
+@if (Request.IsAuthenticated)
+{
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "d-inline" }))
+    {
+        @Html.AntiForgeryToken()
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Merhaba @User.Identity.GetUserName()!
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="@Url.Action("ChangePassword", "Account")">Şifre Değiştir</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="javascript:document.getElementById('logoutForm').submit()">Çıkış Yap</a></li>
+                </ul>
+            </li>
+        </ul>
+    }
+}
+else
+{
+    <ul class="navbar-nav ms-auto">
+        <li class="nav-item">@Html.ActionLink("Kayıt Ol", "Register", "Account", routeValues: null, htmlAttributes: new { @class = "nav-link" })</li>
+        <li class="nav-item">@Html.ActionLink("Giriş Yap", "Login", "Account", routeValues: null, htmlAttributes: new { @class = "nav-link" })</li>
+    </ul>
+}

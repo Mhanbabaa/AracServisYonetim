@@ -1,0 +1,212 @@
+@model IEnumerable<AracServisYonetim.Models.Servis>
+@{
+    ViewBag.Title = "Servis İşlemleri";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Servis İşlemleri</h2>
+    <a href="@Url.Action("Create")" class="btn btn-primary">
+        <i class="bi bi-plus"></i> Yeni Servis Ekle
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <div class="input-group">
+                    <input type="text" id="plakaAra" class="form-control" placeholder="Plaka ara...">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group">
+                    <input type="text" id="musteriAra" class="form-control" placeholder="Müşteri ara...">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select id="durumFiltre" class="form-select">
+                    <option value="Tümü">Tümü</option>
+                    <option value="DevamEdiyor">Devam Ediyor</option>
+                    <option value="Tamamlandi">Tamamlandı</option>
+                    <option value="IptalEdildi">İptal Edildi</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group">
+                    <input type="text" id="teknisyenAra" class="form-control" placeholder="Teknisyen ara...">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Araç/Müşteri</th>
+                        <th>Servis Bilgisi</th>
+                        <th>Durum</th>
+                        <th>Tarih</th>
+                        <th>Ücret</th>
+                        <th>Teknisyen</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-car-front me-2"></i>
+                                    <div>
+                                        <div>@item.Arac.Plaka</div>
+                                        <div>@item.Arac.Marka @item.Arac.Model</div>
+                                        <small class="text-muted">@item.Arac.Musteri.TamAd</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="text-truncate" style="max-width: 200px;">
+                                    @item.Aciklama
+                                </div>
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm dropdown-toggle @(item.Durum == ServisDurumu.DevamEdiyor ? "btn-warning" : item.Durum == ServisDurumu.Tamamlandi ? "btn-success" : "btn-danger")" 
+                                            type="button" 
+                                            id="dropdownMenuButton_@item.Id" 
+                                            data-bs-toggle="dropdown" 
+                                            aria-expanded="false">
+                                        @(item.Durum == ServisDurumu.DevamEdiyor ? "Devam Ediyor" : item.Durum == ServisDurumu.Tamamlandi ? "Tamamlandı" : "İptal Edildi")
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton_@item.Id">
+                                        <li><a class="dropdown-item durum-guncelle" data-id="@item.Id" data-durum="0" href="#">Devam Ediyor</a></li>
+                                        <li><a class="dropdown-item durum-guncelle" data-id="@item.Id" data-durum="1" href="#">Tamamlandı</a></li>
+                                        <li><a class="dropdown-item durum-guncelle" data-id="@item.Id" data-durum="2" href="#">İptal Edildi</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <i class="bi bi-calendar-check"></i> @item.BaslangicTarihi.ToString("dd.MM.yyyy")
+                                </div>
+                                @if (item.BitisTarihi.HasValue)
+                                {
+                                    <div>
+                                        <i class="bi bi-calendar-x"></i> @item.BitisTarihi.Value.ToString("dd.MM.yyyy")
+                                    </div>
+                                }
+                            </td>
+                            <td>
+                                <div>@item.ToplamUcret.ToString("N2")₺</div>
+                                <small class="text-muted">
+                                    İşçilik: @item.IscilikUcreti.ToString("N2")₺<br />
+                                    Parça: @item.ParcaUcreti.ToString("N2")₺
+                                </small>
+                            </td>
+                            <td>
+                                @if (item.Teknisyen != null)
+                                {
+                                    @item.Teknisyen.TamAd
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Atanmadı</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Filtreleme işlemleri
+            $('#plakaAra, #musteriAra, #teknisyenAra').on('keyup', function () {
+                filterTable();
+            });
+
+            $('#durumFiltre').on('change', function () {
+                filterTable();
+            });
+
+            function filterTable() {
+                var plaka = $('#plakaAra').val().toLowerCase();
+                var musteri = $('#musteriAra').val().toLowerCase();
+                var teknisyen = $('#teknisyenAra').val().toLowerCase();
+                var durum = $('#durumFiltre').val();
+
+                $('tbody tr').each(function () {
+                    var plakaMatch = $(this).find('td:eq(0)').text().toLowerCase().indexOf(plaka) > -1;
+                    var musteriMatch = $(this).find('td:eq(0)').text().toLowerCase().indexOf(musteri) > -1;
+                    var teknisyenMatch = $(this).find('td:eq(5)').text().toLowerCase().indexOf(teknisyen) > -1;
+                    
+                    var durumMatch = true;
+                    if (durum !== 'Tümü') {
+                        durumMatch = $(this).find('td:eq(2)').text().indexOf(durum === 'DevamEdiyor' ? 'Devam Ediyor' : 
+                                                                            durum === 'Tamamlandi' ? 'Tamamlandı' : 
+                                                                            'İptal Edildi') > -1;
+                    }
+
+                    $(this).toggle(plakaMatch && musteriMatch && teknisyenMatch && durumMatch);
+                });
+            }
+
+            // Durum güncelleme işlemi
+            $('.durum-guncelle').on('click', function (e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                var durum = $(this).data('durum');
+                var button = $(this);
+
+                $.ajax({
+                    url: '@Url.Action("UpdateStatus")',
+                    type: 'POST',
+                    data: { id: id, durum: durum },
+                    success: function (result) {
+                        if (result.success) {
+                            var statusText = durum == 0 ? 'Devam Ediyor' : durum == 1 ? 'Tamamlandı' : 'İptal Edildi';
+                            var statusClass = durum == 0 ? 'btn-warning' : durum == 1 ? 'btn-success' : 'btn-danger';
+                            
+                            var dropdownButton = $('#dropdownMenuButton_' + id);
+                            dropdownButton.text(statusText);
+                            dropdownButton.removeClass('btn-warning btn-success btn-danger').addClass(statusClass);
+                            
+                            // Sayfayı yenile
+                            location.reload();
+                        } else {
+                            alert('Durum güncellenirken bir hata oluştu: ' + result.message);
+                        }
+                    },
+                    error: function () {
+                        alert('Durum güncellenirken bir hata oluştu.');
+                    }
+                });
+            });
+        });
+    </script>
+}

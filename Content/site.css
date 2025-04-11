@@ -1,0 +1,64 @@
+/* Site geneli için stil tanımları */
+body {
+    padding-bottom: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Navbar altında boşluk */
+.body-content {
+    padding-top: 15px;
+}
+
+/* Türkçe karakterler için font ayarları */
+@font-face {
+    font-family: 'Segoe UI';
+    src: local('Segoe UI');
+    unicode-range: U+00C0-00FF, U+0100-017F;
+}
+
+/* Form elemanları için stil tanımları */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+/* Kartlar için ekstra stil tanımları */
+.card {
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    font-weight: 500;
+}
+
+/* Pre tag için stil tanımlamaları */
+pre {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+
+/* Kod bloğu stilleri */
+code {
+    background-color: #f1f1f1;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-family: Consolas, Monaco, 'Courier New', monospace;
+}
+
+/* Türkçe karakter özel stilleri */
+.turkish-text {
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Responsive ayarlar */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 15px;
+    }
+} 

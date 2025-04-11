@@ -1,0 +1,139 @@
+@model IEnumerable<AracServisYonetim.Models.Arac>
+@{
+    ViewBag.Title = "Araçlar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Araçlar</h2>
+    <a href="@Url.Action("Create")" class="btn btn-primary">
+        <i class="bi bi-plus"></i> Yeni Araç Ekle
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <input type="text" id="plakaAra" class="form-control" placeholder="Plaka ara...">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group">
+                    <input type="text" id="aracSahibiAra" class="form-control" placeholder="Araç sahibi ara...">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select id="garantiFiltre" class="form-select">
+                    <option value="Tümü">Tümü</option>
+                    <option value="Var">Garanti Var</option>
+                    <option value="Yok">Garanti Yok</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.Plaka)</th>
+                        <th>@Html.DisplayNameFor(model => model.Marka)</th>
+                        <th>@Html.DisplayNameFor(model => model.Model)</th>
+                        <th>@Html.DisplayNameFor(model => model.Yil)</th>
+                        <th>@Html.DisplayNameFor(model => model.Kilometre)</th>
+                        <th>Araç Sahibi</th>
+                        <th>@Html.DisplayNameFor(model => model.GarantiKapsaminda)</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.Plaka)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Marka)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Model)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Yil)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Kilometre)</td>
+                            <td>
+                                @if (item.Musteri != null)
+                                {
+                                    @Html.DisplayFor(modelItem => item.Musteri.TamAd)
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Belirtilmemiş</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.GarantiKapsaminda)
+                                {
+                                    <span class="badge bg-success">Var</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Yok</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#plakaAra').on('keyup', function () {
+                filterTable();
+            });
+
+            $('#aracSahibiAra').on('keyup', function () {
+                filterTable();
+            });
+
+            $('#garantiFiltre').on('change', function () {
+                filterTable();
+            });
+
+            function filterTable() {
+                var plaka = $('#plakaAra').val().toLowerCase();
+                var aracSahibi = $('#aracSahibiAra').val().toLowerCase();
+                var garanti = $('#garantiFiltre').val();
+
+                $('tbody tr').each(function () {
+                    var plakaMatch = $(this).find('td:eq(0)').text().toLowerCase().indexOf(plaka) > -1;
+                    var aracSahibiMatch = $(this).find('td:eq(5)').text().toLowerCase().indexOf(aracSahibi) > -1;
+                    
+                    var garantiMatch = true;
+                    if (garanti === 'Var') {
+                        garantiMatch = $(this).find('td:eq(6)').text().trim() === 'Var';
+                    } else if (garanti === 'Yok') {
+                        garantiMatch = $(this).find('td:eq(6)').text().trim() === 'Yok';
+                    }
+
+                    $(this).toggle(plakaMatch && aracSahibiMatch && garantiMatch);
+                });
+            }
+        });
+    </script>
+}

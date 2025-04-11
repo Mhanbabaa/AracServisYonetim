@@ -1,0 +1,43 @@
+@model AracServisYonetim.Models.ApplicationUser
+@{
+    ViewBag.Title = "Personel Sil";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="modal-header">
+    <h2>@ViewBag.Title</h2>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<div class="modal-body">
+    <div class="alert alert-danger">
+        <h4>Bu personeli silmek istediğinizden emin misiniz?</h4>
+        <p>Bu işlem geri alınamaz.</p>
+    </div>
+
+    <dl class="row">
+        <dt class="col-sm-3">Ad Soyad</dt>
+        <dd class="col-sm-9">@Model.TamAd</dd>
+
+        <dt class="col-sm-3">E-posta</dt>
+        <dd class="col-sm-9">@Model.Email</dd>
+
+        <dt class="col-sm-3">Rol</dt>
+        <dd class="col-sm-9">
+            <span class="badge @(Model.Rol == UserRole.Admin ? "bg-danger" : "bg-info")">
+                @(Model.Rol == UserRole.Admin ? "Admin" : "Teknisyen")
+            </span>
+        </dd>
+    </dl>
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+</div>
+
+<div class="modal-footer">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+        <button type="submit" class="btn btn-danger">Sil</button>
+    }
+</div>

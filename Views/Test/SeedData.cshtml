@@ -1,0 +1,50 @@
+@{
+    ViewBag.Title = "Veri Oluşturma";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2>Veri Oluşturma Sonucu</h2>
+        </div>
+        <div class="card-body">
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="alert alert-danger">
+                    <h4>Hata Oluştu</h4>
+                    <p>@ViewBag.ErrorMessage</p>
+                    @if (ViewBag.InnerErrorMessage != null)
+                    {
+                        <p><strong>Detaylı Hata:</strong> @ViewBag.InnerErrorMessage</p>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-success">
+                    <h4>İşlem Başarılı</h4>
+                    <p>@ViewBag.Message</p>
+                    
+                    @if (ViewBag.ConnectionStatus != null)
+                    {
+                        <p><strong>Veritabanı Durumu:</strong> @ViewBag.ConnectionStatus</p>
+                    }
+                </div>
+
+                <div class="mt-4">
+                    <h5>Oluşturulan Veriler:</h5>
+                    <ul>
+                        <li>Admin Kullanıcısı (admin@example.com / Admin123!)</li>
+                        <li>Örnek Müşteriler</li>
+                        <li>Örnek Araçlar</li>
+                        <li>Örnek Servis Kayıtları</li>
+                    </ul>
+                </div>
+            }
+        </div>
+        <div class="card-footer">
+            <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Ana Sayfaya Dön</a>
+        </div>
+    </div>
+</div>

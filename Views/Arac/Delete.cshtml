@@ -1,0 +1,77 @@
+@model AracServisYonetim.Models.Arac
+@{
+    ViewBag.Title = "Araç Sil";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="modal-header">
+    <h2>@ViewBag.Title</h2>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<div class="modal-body">
+    <div class="alert alert-danger">
+        <h4>Bu aracı silmek istediğinizden emin misiniz?</h4>
+        <p>Bu işlem geri alınamaz.</p>
+    </div>
+
+    <dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Plaka)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Plaka)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Marka)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Marka)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Model)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Model)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Yil)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Yil)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Kilometre)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Kilometre)</dd>
+
+        <dt class="col-sm-3">Araç Sahibi</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Musteri.TamAd)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.GarantiKapsaminda)</dt>
+        <dd class="col-sm-9">
+            @if (Model.GarantiKapsaminda)
+            {
+                <span class="badge bg-success">Var</span>
+            }
+            else
+            {
+                <span class="badge bg-danger">Yok</span>
+            }
+        </dd>
+    </dl>
+
+    @if (ViewBag.ServisKayitlari != null && ViewBag.ServisKayitlari.Count > 0)
+    {
+        <div class="alert alert-warning">
+            <p><strong>Uyarı:</strong> Bu araca ait @ViewBag.ServisKayitlari.Count servis kaydı bulunmaktadır. Aracı silmeden önce servis kayıtlarını silmeniz gerekmektedir.</p>
+            <ul>
+                @foreach (var servis in ViewBag.ServisKayitlari)
+                {
+                    <li>@servis.BaslangicTarihi.ToString("dd.MM.yyyy") - @servis.Aciklama</li>
+                }
+            </ul>
+        </div>
+    }
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+</div>
+
+<div class="modal-footer">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+        <button type="submit" class="btn btn-danger" @(ViewBag.ServisKayitlari != null && ViewBag.ServisKayitlari.Count > 0 ? "disabled" : "")>Sil</button>
+    }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

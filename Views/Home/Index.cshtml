@@ -1,0 +1,180 @@
+@model IEnumerable<AracServisYonetim.Models.Servis>
+@{
+    ViewBag.Title = "Panel";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-wrench-adjustable fs-1 text-primary"></i>
+                <h3 class="mt-2">@ViewBag.AktifServisSayisi</h3>
+                <p class="text-muted mb-0">Aktif Servis İşlemleri</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-car-front fs-1 text-success"></i>
+                <h3 class="mt-2">@ViewBag.ToplamAracSayisi</h3>
+                <p class="text-muted mb-0">Toplam Araç</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-people fs-1 text-info"></i>
+                <h3 class="mt-2">@ViewBag.MusteriSayisi</h3>
+                <p class="text-muted mb-0">Müşteri Sayısı</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-check-circle fs-1 text-warning"></i>
+                <h3 class="mt-2">@ViewBag.TamamlananServisSayisi</h3>
+                <p class="text-muted mb-0">Tamamlanan Servisler</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Servis Durumu Dağılımı</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="servisDurumuChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Aylık Servis İşlemleri</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="aylikServisChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Son Servis İşlemleri</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Plaka</th>
+                        <th>Müşteri</th>
+                        <th>Durum</th>
+                        <th>Tarih</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-car-front me-2"></i>
+                                    <div>
+                                        <div>@item.Arac.Plaka</div>
+                                        <small class="text-muted">@item.Arac.Marka @item.Arac.Model</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>@item.Arac.Musteri.TamAd</td>
+                            <td>
+                                @if (item.Durumu == ServisDurumu.Islemde)
+                                {
+                                    <span class="badge bg-warning">Devam Ediyor</span>
+                                }
+                                else if (item.Durumu == ServisDurumu.Tamamlandı)
+                                {
+                                    <span class="badge bg-success">Tamamlandı</span>
+                                }
+                                else if (item.Durumu == ServisDurumu.IptalEdildi)
+                                {
+                                    <span class="badge bg-danger">İptal Edildi</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info">Bekliyor</span>
+                                }
+                            </td>
+                            <td>@item.ServisTarihi.ToString("dd.MM.yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Servis durumu grafiği
+            $.getJSON('@Url.Action("GetServisDurumIstatistikleri")', function (data) {
+                var ctx = document.getElementById('servisDurumuChart').getContext('2d');
+                var chart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Bekleyen', 'İşlemde', 'Tamamlanan', 'İptal Edilen'],
+                        datasets: [{
+                            data: [data.bekleyen, data.islemde, data.tamamlanan, data.iptalEdilen],
+                            backgroundColor: ['#17a2b8', '#ffc107', '#28a745', '#dc3545']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            });
+
+            // Aylık servis grafiği
+            $.getJSON('@Url.Action("GetAylikServisIstatistikleri")', function (data) {
+                var aylar = data.map(function (item) { return item.ay; });
+                var servisSayilari = data.map(function (item) { return item.servisSayisi; });
+
+                var ctx = document.getElementById('aylikServisChart').getContext('2d');
+                var chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: aylar,
+                        datasets: [{
+                            label: 'Servis Sayısı',
+                            data: servisSayilari,
+                            backgroundColor: '#007bff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}
